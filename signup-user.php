@@ -46,6 +46,17 @@
                         <input class="form-control" type="email" name="email" placeholder="Email Address" required value="<?php echo $email ?>">
                     </div>
                     <div class="form-group">
+                    <div class="custom-control custom-radio custom-control-inline">
+                        <input type="radio" id="customRadioInline1" name="radiovalue" class="custom-control-input" value="doctor">
+                        <label class="custom-control-label" for="customRadioInline1">Doctor</label>
+                    </div>
+                    <div class="custom-control custom-radio custom-control-inline">
+                        <input type="radio" id="customRadioInline2" name="radiovalue" class="custom-control-input"
+                               checked="checked" value="patient">
+                        <label class="custom-control-label" for="customRadioInline2">Patient</label>
+                    </div>
+                    </div>
+                    <div class="form-group">
                         <input class="form-control" type="password" name="password" placeholder="Password" required>
                     </div>
                     <div class="form-group">

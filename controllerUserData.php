@@ -12,20 +12,29 @@ if(isset($_POST['signup'])){
     $email = mysqli_real_escape_string($con, $_POST['email']);
     $password = mysqli_real_escape_string($con, $_POST['password']);
     $cpassword = mysqli_real_escape_string($con, $_POST['cpassword']);
+    $rvalue = $_POST['radiovalue'];
+
     if($password !== $cpassword){
         $errors['password'] = "Confirm password not matched!";
     }
-    $email_check = "SELECT * FROM usertable WHERE email = '$email'";
+
+    $email_check = "SELECT name, email FROM doctor_table WHERE email = '$email'
+                        UNION
+                        SELECT name, email FROM patient_table WHERE email = '$email'";
     $res = mysqli_query($con, $email_check);
     if(mysqli_num_rows($res) > 0){
         $errors['email'] = "Email that you have entered is already exist!";
     }
-    if(count($errors) === 0){
+    if(count($errors) == 0){
         $encpass = password_hash($password, PASSWORD_BCRYPT);
         $code = 0;
         $status = "notverified";
-        $insert_data = "INSERT INTO usertable (name, email, password, code, status)
-                        values('$name', '$email', '$encpass', '$code', '$status')";
+        if($rvalue == "doctor") {
+            $insert_data = "INSERT INTO doctor_table (name, email, password, code, status) values('$name', '$email', '$encpass', '$code', '$status')";
+        } else if($rvalue == "patient") {
+            $insert_data = "INSERT INTO patient_table (name, email, password, code, status) values('$name', '$email', '$encpass', '$code', '$status')";
+        }
+
         $data_check = mysqli_query($con, $insert_data);
         if($data_check){
             header('location: login-user.php');
@@ -39,7 +48,9 @@ if(isset($_POST['signup'])){
     if(isset($_POST['check'])){
         unset($_SESSION['info']);
         $email = mysqli_real_escape_string($con, $_SESSION['email']);
-        $check_code = "SELECT * FROM usertable WHERE email = '$email'";
+        $check_code = "SELECT name, email, code FROM doctor_table WHERE email = '$email'
+                        UNION
+                        SELECT name, email, code FROM patient_table WHERE email = '$email'";
         $code_res = mysqli_query($con, $check_code);
         if(mysqli_num_rows($code_res) > 0){
             $fetch_data = mysqli_fetch_assoc($code_res);
@@ -48,8 +59,9 @@ if(isset($_POST['signup'])){
 
             if($code == $fetch_code) {
                 $status = 'verified';
-                $update_otp = "UPDATE usertable SET status = '$status' WHERE email = '$email'";
-                $update_res = mysqli_query($con, $update_otp);
+                $update_otp = "UPDATE doctor_table SET status = '$status' WHERE email = '$email';
+                                UPDATE patient_table SET status = '$status' WHERE email='$email'";
+                $update_res = mysqli_multi_query($con, $update_otp);
 
                 $_SESSION['email'] = $email;
                 $_SESSION['password'] = true;
@@ -67,18 +79,21 @@ if(isset($_POST['signup'])){
     if(isset($_POST['login'])){
         $email = mysqli_real_escape_string($con, $_POST['email']);
         $password = mysqli_real_escape_string($con, $_POST['password']);
-        $check_email = "SELECT * FROM usertable WHERE email = '$email'";
+        $check_email = "SELECT name, email, password, code, status FROM doctor_table WHERE email = '$email'
+                        UNION
+                        SELECT name, email, password, code, status FROM patient_table WHERE email='$email'";
+
         $res = mysqli_query($con, $check_email);
         if(mysqli_num_rows($res) > 0){
             $fetch = mysqli_fetch_assoc($res);
             $fetch_pass = $fetch['password'];
             if(password_verify($password, $fetch_pass)){
                 $_SESSION['email'] = $email;
-                header('location: user-otp.php');
+
                 // opt authentication
                 $code = mt_rand(100000, 999999);
-                $update_otp = "UPDATE usertable SET code = $code WHERE email = '$email'";
-                $update_res = mysqli_query($con, $update_otp);
+                $update_otp = "UPDATE doctor_table SET code = $code WHERE email = '$email'; UPDATE patient_table SET code = $code WHERE email = '$email';";
+                $update_res = mysqli_multi_query($con, $update_otp);
 
                 $subject = "Email Verification Code";
                 $message = "Your verification code is $code";
@@ -105,12 +120,12 @@ if(isset($_POST['signup'])){
     //if user click continue button in forgot password form
     if(isset($_POST['check-email'])){
         $email = mysqli_real_escape_string($con, $_POST['email']);
-        $check_email = "SELECT * FROM usertable WHERE email='$email'";
+        $check_email = "SELECT name, email FROM doctor_table WHERE email='$email' UNION SELECT name, email FROM patient_table WHERE email='$email'";
         $run_sql = mysqli_query($con, $check_email);
         if(mysqli_num_rows($run_sql) > 0){
             $code = mt_rand(100000, 999999);
-            $insert_code = "UPDATE usertable SET code = $code WHERE email = '$email'";
-            $run_query =  mysqli_query($con, $insert_code);
+            $insert_code = "UPDATE doctor_table SET code = $code WHERE email = '$email'; UPDATE patient_table SET code = $code WHERE email = '$email';";
+            $run_query =  mysqli_multi_query($con, $insert_code);
             if($run_query){
                 $subject = "Password Reset Code";
                 $message = "Your password reset code is $code";
@@ -138,13 +153,13 @@ if(isset($_POST['signup'])){
     if(isset($_POST['check-reset-otp'])){
         unset($_SESSION['info']);
         $email = $_SESSION['email'];
-        $check_code = "SELECT * FROM usertable WHERE email = '$email'";
+        $check_code = "SELECT email, code FROM doctor_table WHERE email = '$email' UNION SELECT email, code FROM patient_table WHERE email='$email'";
         $code_res = mysqli_query($con, $check_code);
         if(mysqli_num_rows($code_res) > 0){
             $fetch_data = mysqli_fetch_assoc($code_res);
             $fetch_code = $fetch_data['code'];
             $code = $_POST['otp'];
-            echo $code . $fetch_code;
+
             if($code == $fetch_code) {
                 $_SESSION['email'] = $email;
                 $_SESSION['password'] = true;
@@ -162,17 +177,16 @@ if(isset($_POST['signup'])){
 
     //if user click change password button
     if(isset($_POST['change-password'])){
-        $_SESSION['info'] = "";
+        unset($_SESSION['info']);
         $password = mysqli_real_escape_string($con, $_POST['password']);
         $cpassword = mysqli_real_escape_string($con, $_POST['cpassword']);
         if($password !== $cpassword){
             $errors['password'] = "Confirm password not matched!";
         }else{
-            $code = 0;
             $email = $_SESSION['email']; //getting this email using session
             $encpass = password_hash($password, PASSWORD_BCRYPT);
-            $update_pass = "UPDATE usertable SET code = $code, password = '$encpass' WHERE email = '$email'";
-            $run_query = mysqli_query($con, $update_pass);
+            $update_pass = "UPDATE doctor_table SET password = '$encpass' WHERE email = '$email'; UPDATE patient_table SET password = '$encpass' WHERE email = '$email';";
+            $run_query = mysqli_multi_query($con, $update_pass);
             if($run_query){
                 $info = "Your password changed. Now you can login with your new password.";
                 $_SESSION['info'] = $info;
