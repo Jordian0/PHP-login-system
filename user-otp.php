@@ -15,8 +15,7 @@ if($email == false){
 </head>
 <body>
     <div class="container">
-        <div class="row">
-            <div class="col-md-4 offset-md-4 form">
+            <div class="form otp-form mx-auto">
                 <form action="user-otp.php" method="POST" autocomplete="off">
                     <h2 class="text-center">Code Verification</h2>
                     <?php 
@@ -51,7 +50,6 @@ if($email == false){
                     <div class="link login-link text-center">Not yet a member? <a href="signup-user.php">Signup now</a></div>
                 </form>
             </div>
-        </div>
     </div>
     
 </body>

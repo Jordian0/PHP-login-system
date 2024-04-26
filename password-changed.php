@@ -14,8 +14,7 @@ if($_SESSION['info'] == false){
 </head>
 <body>
     <div class="container">
-        <div class="row">
-            <div class="col-md-4 offset-md-4 form login-form">
+            <div class="form changed-form">
             <?php 
             if(isset($_SESSION['info'])){
                 ?>
@@ -30,7 +29,6 @@ if($_SESSION['info'] == false){
                         <input class="form-control button" type="submit" name="login-now" value="Login Now">
                     </div>
                 </form>
-            </div>
         </div>
     </div>
     

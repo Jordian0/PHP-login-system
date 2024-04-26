@@ -15,8 +15,7 @@ if($email == false){
 </head>
 <body>
     <div class="container">
-        <div class="row">
-            <div class="col-md-4 offset-md-4 form">
+            <div class="form mx-auto new-password-form">
                 <form action="new-password.php" method="POST" autocomplete="off">
                     <h2 class="text-center">New Password</h2>
                     <?php 
@@ -52,7 +51,6 @@ if($email == false){
                     </div>
                 </form>
             </div>
-        </div>
     </div>
     
 </body>

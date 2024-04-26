@@ -18,8 +18,8 @@ try {
     $mail->SMTPAuth   = true;
     $mail->SMTPSecure = 'tls';
     $mail->Port = 587;
-    $mail->Username = 'random@gmail.com';
-    $mail->Password = 'towyxrfsbtgqwcga';
+    $mail->Username = 'ss2899411@gmail.com';
+    $mail->Password = 'mcvagfkyxvxianuj';
 
     $mail->setFrom('jordiannj@gmail.com', 'Jordian');
 } catch (Exception $e) {

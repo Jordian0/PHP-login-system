@@ -18,9 +18,7 @@ if(isset($_POST['signup'])){
         $errors['password'] = "Confirm password not matched!";
     }
 
-    $email_check = "SELECT name, email FROM doctor_table WHERE email = '$email'
-                        UNION
-                        SELECT name, email FROM patient_table WHERE email = '$email'";
+    $email_check = "SELECT name, email FROM doctor_table WHERE email = '$email' UNION SELECT name, email FROM patient_table WHERE email = '$email'";
     $res = mysqli_query($con, $email_check);
     if(mysqli_num_rows($res) > 0){
         $errors['email'] = "Email that you have entered is already exist!";
@@ -200,5 +198,43 @@ if(isset($_POST['signup'])){
    //if login now button click
     if(isset($_POST['login-now'])){
         header('Location: login-user.php');
+    }
+
+    // if patient form
+    if(isset($_POST['patient-data-submit'])) {
+        $selectedDoctor = mysqli_real_escape_string($con, $_POST['select-doctor']);
+        $patientEmail = mysqli_real_escape_string($con, $_POST['user-email']);
+
+
+        if(isset($_FILES['upload-report'])){
+            $patientsql = "SELECT patient_id FROM patient_table WHERE email = '$patientEmail'";
+            $result = mysqli_query($con, $patientsql);
+            $fetch_data = mysqli_fetch_assoc($result);
+            $patientID = $fetch_data['patient_id'];
+
+            $targetdir = "uploads/";
+            $uploadfile = $targetdir . basename($_FILES['upload-report']['name']);
+
+            if($_FILES['upload-report']['size'] > 16000000){
+                echo "File too large!";
+            } else {
+                if (move_uploaded_file($_FILES['upload-report']['tmp_name'], $uploadfile)) {
+                    $filename = $_FILES['upload-report']['name'];
+                    $folder_path = $targetdir;
+                    $time_stamp = date('Y-m-d H:i:s');
+                    $sql = "INSERT INTO file_upload (filename, folder_path, time_stamp, patient_id) VALUES ('$filename', '$folder_path', '$time_stamp', $patientID)";
+                    $result = mysqli_query($con, $sql);
+                }
+            }
+        }
+        else {
+            $uploaddocid = "UPDATE patient_table SET doc_id = $selectedDoctor WHERE email='$patientEmail'";
+            $result = mysqli_query($con, $uploaddocid);
+
+            if(!$result) {
+                echo "Error Occurred while inserting data!";
+            }
+        }
+
     }
 ?>

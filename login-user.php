@@ -9,8 +9,7 @@
 </head>
 <body>
     <div class="container">
-        <div class="row">
-            <div class="col-md-4 offset-md-4 form login-form">
+            <div class="form login-form mx-auto">
                 <form action="login-user.php" method="POST" autocomplete="on">
                     <h2 class="text-center">Login Form</h2>
                     <p class="text-center">Login with your email and password.</p>
@@ -40,7 +39,6 @@
                     <div class="link login-link text-center">Not yet a member? <a href="signup-user.php">Signup now</a></div>
                 </form>
             </div>
-        </div>
     </div>
     
 </body>
