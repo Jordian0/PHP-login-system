@@ -6,6 +6,10 @@ $email = "";
 $name = "";
 $errors = array();
 
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+
+
 //if user signup button
 if(isset($_POST['signup'])){
     $name = mysqli_real_escape_string($con, $_POST['name']);
@@ -227,13 +231,11 @@ if(isset($_POST['signup'])){
                 }
             }
         }
-        else {
-            $uploaddocid = "UPDATE patient_table SET doc_id = $selectedDoctor WHERE email='$patientEmail'";
-            $result = mysqli_query($con, $uploaddocid);
 
-            if(!$result) {
-                echo "Error Occurred while inserting data!";
-            }
+        $uploaddocid = "UPDATE patient_table SET doc_id = $selectedDoctor WHERE email='$patientEmail'";
+        $result = mysqli_query($con, $uploaddocid);
+        if(!$result) {
+            echo "Error Occurred while inserting data!";
         }
 
     }

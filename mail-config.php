@@ -19,7 +19,7 @@ try {
     $mail->SMTPSecure = 'tls';
     $mail->Port = 587;
     $mail->Username = 'ss2899411@gmail.com';
-    $mail->Password = 'mcvagfkyxvxianuj';
+    $mail->Password = 'vfnnnxxlssgkwmhl';
 
     $mail->setFrom('jordiannj@gmail.com', 'Jordian');
 } catch (Exception $e) {

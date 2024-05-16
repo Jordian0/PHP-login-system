@@ -1,6 +1,7 @@
 <?php require_once "controllerUserData.php"; ?>
 <?php
 require_once "doctor-data.php";
+require_once "connection.php";
 
 $email = mysqli_real_escape_string($con, $_SESSION['email']);
 $password = $_SESSION['password'];
