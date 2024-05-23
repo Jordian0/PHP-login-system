@@ -1,0 +1,20 @@
+int led = 9;
+
+void setup() {
+    Serial.begin(9600);
+    pinMode(lef, OUTPUT);
+}
+
+void loop() {
+    if(Serial.available() > 0) {
+        char x = Serial.read();
+        Serial.println(x);
+        if(x == 'o') {
+            digitalWrite(led, HIGH);
+        }
+        else if(x == 'c') {
+            digitalWrite(led, LOW);
+        }
+        delay(100);
+    }
+}
